@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Create Account</h2>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="{{ url_for('auth.signup') }}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required
+                                   pattern="[a-zA-Z0-9_]{3,20}" 
+                                   title="3-20 characters, letters, numbers and underscore only">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required
+                                   minlength="8"
+                                   title="Minimum 8 characters, must include uppercase, lowercase and numbers">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Account Type</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="consumer">Consumer (Watch Videos)</option>
+                                <option value="creator">Creator (Upload & Watch Videos)</option>
+                            </select>
+                            <small class="form-text text-muted">
+                                Creators can upload and watch videos. Consumers can only watch videos.
+                            </small>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Sign Up</button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-3">
+                        Already have an account? <a href="{{ url_for('auth.login') }}">Log In</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

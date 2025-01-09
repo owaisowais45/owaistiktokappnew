@@ -1,0 +1,10 @@
+Flask
+Flask-PyMongo
+Flask-Login
+Werkzeug
+python-dotenv
+timeago
+moviepy
+Pillow
+certifi
+PyMongo

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Account Settings</h2>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label">Profile Picture</label>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ url_for('static', filename='uploads/avatars/' + current_user.avatar) if current_user.avatar else url_for('static', filename='img/default-avatar.png') }}" 
+                                     class="rounded-circle me-3" 
+                                     style="width: 100px; height: 100px; object-fit: cover;">
+                                <div>
+                                    <input type="file" class="form-control" name="avatar" accept="image/*">
+                                    <small class="text-muted">Max file size: 5MB. Supported formats: PNG, JPG, JPEG, GIF</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   value="{{ current_user.username }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ current_user.email }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="3">{{ current_user.bio }}</textarea>
+                        </div>
+
+                        <hr class="my-4">
+
+                        
+                        <h4 class="mb-3">Change Password</h4>
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="current_password" name="current_password">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

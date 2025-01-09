@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Upload Video</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="video" class="form-label">Choose Video</label>
+                            <input type="file" class="form-control" id="video" name="video" 
+                                   accept="video/mp4,video/avi,video/mov,video/wmv" required>
+                            <small class="text-muted">Supported formats: MP4, AVI, MOV, WMV</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="progress mb-3 d-none" id="upload-progress">
+                            <div class="progress-bar" role="progressbar"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload Video</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

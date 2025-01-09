@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h2>Search Results for "{{ query }}"</h2>
+            {% if total_results %}
+                <p>Found {{ total_results }} results</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for video in videos %}
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="video-thumbnail position-relative">
+                    <a href="{{ url_for('main.watch_video', video_id=video._id) }}">
+                        <video class="card-img-top" poster="{{ video.thumbnail_url }}">
+                            <source src="{{ video.video_url }}" type="video/mp4">
+                        </video>
+                        <span class="badge bg-dark position-absolute bottom-0 end-0 m-2">
+                            {{ video.views|default(0) }} views
+                        </span>
+                    </a>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{{ url_for('main.watch_video', video_id=video._id) }}" class="text-decoration-none text-dark">
+                            {{ video.title }}
+                        </a>
+                    </h5>
+                    <p class="card-text text-muted">{{ video.description|truncate(100) }}</p>
+                    
+                    <!-- Interaction Buttons -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button class="btn btn-sm {% if video._id in current_user.likes %}btn-primary{% else %}btn-outline-primary{% endif %} like-btn" 
+                                    data-video-id="{{ video._id }}">
+                                <i class="{% if video._id in current_user.likes %}fas{% else %}far{% endif %} fa-heart"></i>
+                                <span class="likes-count d-inline-block">{{ video.get('likes', [])|length }}</span>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary comment-btn" 
+                                    data-video-id="{{ video._id }}">
+                                <i class="far fa-comment"></i>
+                                <span class="comments-count">{{ video.get('comments', [])|length }}</span>
+                            </button>
+                        </div>
+                        <small class="text-muted">{{ video.created_at|timeago }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <p>No results found for "{{ query }}"</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if total_pages > 1 %}
+    
+    {% endif %}
+</div>
+
+
+{% include 'partials/comment_modal.html' %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/video-interactions.js') }}"></script>
+{% endblock %}

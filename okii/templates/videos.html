@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile_user.username }}'s Videos{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow">
+        <div class="card-body">
+            <h2 class="card-title mb-4">{{ profile_user.username }}'s Videos</h2>
+            
+            {% if videos %}
+                <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+                    {% for video in videos %}
+                        <div class="col">
+                            <div class="card h-100">
+                                <a href="{{ url_for('main.watch', video_id=video._id) }}" class="text-decoration-none">
+                                    <img src="{{ url_for('static', filename='uploads/thumbnails/' + video.thumbnail) }}" 
+                                         class="card-img-top" 
+                                         alt="{{ video.title }}">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-truncate">{{ video.title }}</h5>
+                                        <p class="card-text text-muted small">
+                                            {{ video.views|format_number }} views • 
+                                            {{ video.created_at|timeago }}
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if total_pages > 1 %}
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% for p in range(1, total_pages + 1) %}
+                                <li class="page-item {{ 'active' if p == page else '' }}">
+                                    <a class="page-link" href="{{ url_for('user.user_videos', username=profile_user.username, page=p) }}">
+                                        {{ p }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <p class="text-center text-muted">No videos found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

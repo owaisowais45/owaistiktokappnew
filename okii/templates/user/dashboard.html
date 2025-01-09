@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to your Dashboard</h1>
+    <a href="{{ url_for('user.upload_video') }}">Upload Video</a>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+    
+    <h2>Your Videos</h2>
+    {% for video in videos %}
+        <div>
+            <h3>{{ video.title }}</h3>
+            <p>{{ video.description }}</p>
+            <video width="320" height="240" controls>
+                <source src="{{ url_for('static', filename='uploads/' + video.filename) }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p>Views: {{ video.views }}</p>
+            <p>Likes: {{ video.likes }}</p>
+        </div>
+    {% endfor %}
+</body>
+</html>

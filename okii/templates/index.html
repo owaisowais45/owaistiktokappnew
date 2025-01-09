@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Video Sharing{% endblock %}
+
+{% block content %}
+<div class="container p-0">
+    <div class="row mb-4">
+        <div class="">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Discover Videos</h2>
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Sort by: {{ active_sort|title }}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item {% if active_sort == 'latest' %}active{% endif %}" href="?sort=latest">Latest</a></li>
+                        <li><a class="dropdown-item {% if active_sort == 'popular' %}active{% endif %}" href="?sort=popular">Most Popular</a></li>
+                        <li><a class="dropdown-item {% if active_sort == 'trending' %}active{% endif %}" href="?sort=trending">Trending</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="row mb-4">
+        <div class="col-md-8">
+            <form class="d-flex" id="inline-search">
+                <input type="search" 
+                       class="form-control me-2" 
+                       id="search-input" 
+                       placeholder="Search videos..."
+                       value="{{ request.args.get('q', '') }}">
+                <button class="btn btn-primary" type="submit">Search</button>
+                {% if request.args.get('q') %}
+                    <button class="btn btn-outline-secondary ms-2" id="clear-search">Clear</button>
+                {% endif %}
+            </form>
+        </div>
+    </div> -->
+
+    
+    <div class="row">
+        <div class="">
+            {% if videos %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for video in videos %}
+                <div class="col">
+                    <div class="card h-100 video-card">
+                        <!-- Video Thumbnail -->
+                        <div class="video-thumbnail position-relative">
+                            <video class="card-img-top" controls preload="metadata">
+                                <source src="{{ video.video_url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <span class="badge bg-dark position-absolute bottom-0 end-0 m-2">
+                                {{ video.views|default(0) }} views
+                            </span>
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">{{ video.title }}</h5>
+                            <p class="card-text text-muted">{{ video.description|truncate(100) }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                               
+<div class="btn-group">
+    <button class="btn btn-sm {% if video._id in current_user.likes %}btn-primary{% else %}btn-outline-primary{% endif %} like-btn" 
+            data-video-id="{{ video._id }}">
+        <i class="{% if video._id in current_user.likes %}fas{% else %}far{% endif %} fa-heart"></i>
+        <span class="likes-count d-inline-block">{{ video.get('likes', [])|length }}</span>
+    </button>
+    <button class="btn btn-sm btn-outline-secondary comment-btn" 
+            data-video-id="{{ video._id }}">
+        <i class="far fa-comment"></i>
+        <span class="comments-count">{{ video.get('comments', [])|length }}</span>
+    </button>
+</div>  
+                                <small class="text-muted">{{ video.created_at|timeago }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if total_pages > 1 %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                        <a class="page-link" href="?page={{ current_page - 1 }}&sort={{ active_sort }}">Previous</a>
+                    </li>
+                    {% for page in range(1, total_pages + 1) %}
+                    <li class="page-item {% if page == current_page %}active{% endif %}">
+                        <a class="page-link" href="?page={{ page }}&sort={{ active_sort }}">{{ page }}</a>
+                    </li>
+                    {% endfor %}
+                    <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
+                        <a class="page-link" href="?page={{ current_page + 1 }}&sort={{ active_sort }}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-video mb-3" style="font-size: 3rem;"></i>
+                <h3>No videos available</h3>
+                {% if current_user.is_authenticated %}
+                <p>Be the first to share a video!</p>
+                <a href="{{ url_for('user.upload_video') }}" class="btn btn-primary">
+                    <i class="fas fa-upload me-1"></i> Upload Video
+                </a>
+                {% else %}
+                <p>Sign in to start sharing videos</p>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt me-1"></i> Sign In
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="commentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title"><i class="fas fa-comments me-2"></i>Comments</h5>
+                
+            </div>
+            <div class="modal-body">
+                <div class="comments-wrapper">
+                    <div id="comments-list" class="comments-section mb-3">
+                        <!-- Comments will be loaded here -->
+                    </div>
+                    
+                    {% if current_user.is_authenticated %}
+                    <div class="comment-form-wrapper border-top pt-3">
+                        <form id="comment-form" class="comment-form">
+                            <div class="input-group">
+                                <textarea class="form-control" id="comment-content" 
+                                          rows="2" placeholder="Write a comment..." required></textarea>
+                            </div>
+                            <div class="d-flex justify-content-end mt-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-1"></i>Post Comment
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-3 border-top">
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login to comment
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<!-- <script src="{{ url_for('static', filename='js/video-interactions.js') }}"></script> -->
+{% endblock %}
